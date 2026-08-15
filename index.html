@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Feliz Cumpleaños!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+        }
+        h1, h2, h3, .serif-font {
+            font-family: 'Playfair Display', serif;
+        }
+        .fade-in { 
+            animation: fadeIn 0.6s ease-out; 
+        }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(15px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        /* Ajuste para las imágenes de relleno */
+        .img-placeholder {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+        }
+        /* Colores personalizados Aperol Sunset */
+        .bg-sunset {
+            background: linear-gradient(135deg, #FFB6C1 0%, #FF8C00 50%, #FFF06A 100%);
+        }
+        .text-sunset {
+            color: #FF6F00;
+        }
+    </style>
+</head>
+<body class="bg-sunset min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white/95 backdrop-blur-md max-w-md w-full rounded-[2rem] shadow-2xl overflow-hidden fade-in border-2 border-orange-200" id="game-card">
+        
+        <!-- Contenedor de la foto o video -->
+        <div class="w-full bg-orange-50 relative" id="image-container">
+            <img id="story-image" src="" alt="Recuerdo" class="w-full h-72 object-cover hidden transition-opacity duration-300">
+            <video id="story-video" controls class="w-full h-72 object-cover hidden transition-opacity duration-300 bg-black"></video>
+            <!-- Nuevo contenedor para collages -->
+            <div id="collage-container" class="hidden grid-cols-2 gap-3 p-4 bg-orange-50 max-h-96 overflow-y-auto"></div>
+        </div>
+
+        <!-- Contenedor del contenido -->
+        <div class="p-8">
+            <div id="story-text" class="text-lg text-gray-800 leading-relaxed mb-8 text-center font-medium">
+                <!-- El texto de la historia aparecerá aquí -->
+            </div>
+
+            <div id="choices-container" class="flex flex-col gap-4">
+                <!-- Los botones se generarán aquí -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // DATOS DE LA HISTORIA Y FOTOS
+        // ==========================================
+        const storyData = {
+            inicio: {
+                texto: "<b class='text-xl text-orange-600'>13 de agosto del 2019. Donde Todo Empezó. ✨</b><br><br>¿Te imaginarías que lo que fue una salida a una alberca desencadenaría mi efecto mariposa más bonito? 🦋 Porque yo sí, tal y como te lo menciono siempre, eres y serás la persona más especial y que más bonito me va a querer y gracias a Dios pude ver eso 🙏.<br><br>Recuerdo lo bien que la pasamos, hicimos click y todo fue muy natural desde el primer momento y por supuesto, lo atrevida que fuiste con ese primer beso... muy bello, como tú 💖.<br><br>7 años después aquí seguimos y te prometo que volverás a sonreír como en cada año y es que de eso va esto, al final siempre sonríes y eres feliz 😊. No olvides que la vida son altas y bajas. Todo se vive, todo se disfruta. Todo lo que viva y disfrute quiero que sea contigo 🥂.",
+                imagen: "20190813_184200.jpg", 
+                video: "",
+                opciones: [
+                    { texto: "Más de ese momento ✨", destino: "collage_2019" }
+                ]
+            },
+            collage_2019: {
+                texto: "Momentos que se quedan para siempre. 📸❤️",
+                imagen: "",
+                video: "",
+                // Aquí es donde pondrás los nombres de las fotos que me mandes para el collage
+                imagenes_collage: [
+                    "20190813_172107.jpg", 
+                    "Screenshot_20190813-210334_WhatsApp.jpg",
+                    "20190813_152019.jpg",
+                    "IMG-20190818-WA0082.jpeg"
+                ],
+                opciones: [
+                    { texto: "Volver a vivir ⏪", destino: "menu_anos" }
+                ]
+            },
+            menu_anos: {
+                texto: "<b class='text-xl text-orange-600'>Nuestra Máquina del Tiempo ⏳</b><br><br>Aquí están guardados nuestros recuerdos. Selecciona el año que quieres revivir:",
+                imagen: "",
+                video: "",
+                opciones: [
+                    { texto: "2019 🎂", destino: "cumple_2019" },
+                    { texto: "2020 🏡", destino: "cumple_2020" },
+                    { texto: "2021 ✨", destino: "cumple_2021" },
+                    { texto: "2022 🥺", destino: "cumple_2022" },
+                    { texto: "2024 🌟", destino: "cumple_2024" },
+                    { texto: "2025 🌊", destino: "cumple_2025" },
+                    { texto: "Un mensaje para hoy 💌", destino: "mensaje_2026" }
+                ]
+            },
+            cumple_2019: {
+                texto: "<b class='text-xl text-orange-600'>Primer y Único Cumpleaños Sin Ti</b><br><br>No hay foto de ambos aquí, mi amor. Como recordarás, no nos querían juntos y por eso no pasamos este cumpleaños los dos jeje 🤭.<br><br>Afortunadamente, documentas todo y yo capturo todo 📸. No estuve yo, pero moría de ganas por estar y decidí que no debía perderme los que seguían y hasta el día de hoy, lo he cumplido ✨.",
+                imagen: "Screenshot_20190821-160354_WhatsApp.jpg",
+                video: "",
+                opciones: [
+                    { texto: "Más de este año 📸", destino: "collage_cumple_2019" },
+                    { texto: "Regresar a los años 🔙", destino: "menu_anos" }
+                ]
+            },
+            collage_cumple_2019: {
+                texto: "Recuerdos sueltos del 2019 ✨",
+                imagen: "",
+                video: "",
+                imagenes_collage: [
+                    "20190908_173430.jpg", 
+                    "20190912_192533.jpg"
+                ],
+                opciones: [
+                    { texto: "Regresar a los años 🔙", destino: "menu_anos" }
+                ]
+            },
+            cumple_2020: {
+                texto: "<b class='text-xl text-orange-600'>Sí se logró. 🎉</b><br><br>Los años 2019 y 2020 fueron muy locos y difíciles, viéndonos a escondidas y por ratitos... pero qué buenos ratos 🤫. Después de mucho insistir, tus papás accedieron y pasamos el primer año juntos. Fue en Tlalix, en tu casa, con tu familia 🏡.<br><br>Sin arrepentimientos del tiempo que nos costó y con todas las ganas de seguir avanzando 💫. Bien contenta con tu regalo hecho por tu carpintero favorito 🪚 y el pastel que con mucho esfuerzo te regaló tu suegra (que ahora te ama 💖).",
+                imagen: "IMG_0763.jpg",
+                video: "",
+                opciones: [
+                    { texto: "Más de este año 📸", destino: "collage_2020" },
+                    { texto: "Regresar a los años 🔙", destino: "menu_anos" }
+                ]
+            },
+            collage_2020: {
+                texto: "Momentos contigo del 2020 🥰",
+                imagen: "",
+                video: "",
+                imagenes_collage: [
+                    "00100sPORTRAIT_00100_BURST20200519133207730_COVER.jpg", 
+                    "IMG_4321.jpg",
+                    "00100sPORTRAIT_00100_BURST20200608183443532_COVER.JPG"
+                ],
+                opciones: [
+                    { texto: "Regresar a los años 🔙", destino: "menu_anos" }
+                ]
+            },
+            cumple_2021: {
+                texto: "<b class='text-xl text-orange-600'>Todo mejoró. ✨</b><br><br>Creo que es como describiría este año, este cumpleaños. Ya no estábamos tú y yo, sino que ahora éramos nosotros y tus personas favoritas. 🥰<br><br>Ese día no me esperabas, pero logré llegar y por supuesto con mi fiel amigo Óscar. 😎<br><br>Al día siguiente, tocó otro Mafest, pero esta vez ya en casa de nosotros. 🏡 Increíble lo que avanzamos ese año. 🚀",
+                imagen: "PXL_20210814_233504505.JPG",
+                video: "",
+                opciones: [
+                    { texto: "Más de este año 📸", destino: "collage_2021" },
+                    { texto: "Regresar a los años 🔙", destino: "menu_anos" }
+                ]
+            },
+            collage_2021: {
+                texto: "Recuerdos increíbles del 2021 🎉",
+                imagen: "",
+                video: "",
+                imagenes_collage: [
+                    "IMG_4752.JPG", 
+                    "PXL_20210814_235514774.PORTRAIT.JPG",
+                    "PXL_20210816_231459000.PORTRAIT-ANIMATION.GIF"
+                ],
+                opciones: [
+                    { texto: "Regresar a los años 🔙", destino: "menu_anos" }
+                ]
+            },
+            cumple_2022: {
+                texto: "<b class='text-xl text-orange-600'>Una Lloradera 🥺</b><br><br>Y es que así fue este año, un llorar por nuestro primer diciembre juntos 🎄, por tus regalos 🎁, por tu graduación 🎓, por esas citas. Recuerdo que en tu cumpleaños también fue una lloradera por mi abuela, tanto que te quiere 👵🏼❤️.",
+                imagen: "PXL_20220815_220921633.PORTRAIT.JPG",
+                video: "",
+                opciones: [
+                    { texto: "Más de este año 📸", destino: "collage_2022" },
+                    { texto: "Regresar a los años 🔙", destino: "menu_anos" }
+                ]
+            },
+            collage_2022: {
+                texto: "Momentos emotivos del 2022 🥺❤️",
+                imagen: "",
+                video: "",
+                imagenes_collage: [
+                    "PXL_20220814_165346707.PORTRAIT.JPG", 
+                    "PXL_20220822_145759049.JPG",
+                    "PXL_20221228_215417912.JPG"
+                ],
+                opciones: [
+                    { texto: "Regresar a los años 🔙", destino: "menu_anos" }
+                ]
+            },
+            cumple_2024: {
+                texto: "<b class='text-xl text-orange-600'>Un año exitoso. 🌟</b><br><br>Todo lo que empezaba para ti como un sueño empezaba a dar sus frutos. 🌱 Logramos poner tu bonito estudio 💅, fuiste la reina más hermosa de Tlalixcoyan 👑 y te tomé la foto que más me encanta de ti el día de tu cumpleaños 📸.<br><br>Quiero verte así toda la vida. ❤️",
+                imagen: "VideoCapture_20240818-164444.JPG",
+                video: "",
+                opciones: [
+                    { texto: "Más de este año 📸", destino: "collage_2024" },
+                    { texto: "Regresar a los años 🔙", destino: "menu_anos" }
+                ]
+            },
+            collage_2024: {
+                texto: "La reina más hermosa. 👑✨",
+                imagen: "",
+                video: "",
+                imagenes_collage: [
+                    "PXL_20230529_213447029.JPG", 
+                    "PXL_20240324_221916174.MV~2.JPG",
+                    "PXL_20230716_215447144.JPG"
+                ],
+                opciones: [
+                    { texto: "Regresar a los años 🔙", destino: "menu_anos" }
+                ]
+            },
+            cumple_2025: {
+                texto: "<b class='text-xl text-orange-600'>El último antes hasta ayer. 🌊</b><br><br>El 2025 ha sido un año difícil para nuestra relación, pero no por ello vamos a ignorar los momentos que vivimos. ❤️‍🩹<br><br>En la comida de tu cumpleaños hacías ver hermoso al mar cada vez que estabas tú frente a él. 🌅<br><br>Gracias por tanto, te amo y te valoro. Vamos a ser lo que anhelamos. 🫂💖",
+                imagen: "",
+                video: "20250815_202353.mp4",
+                opciones: [
+                    { texto: "Más de este año 📸", destino: "collage_2025" },
+                    { texto: "Regresar a los años 🔙", destino: "menu_anos" }
+                ]
+            },
+            collage_2025: {
+                texto: "Nuestra luz frente al mar en 2025 🌊✨",
+                imagen: "",
+                video: "",
+                imagenes_collage: [
+                    "PXL_20230716_215447144.jpg", 
+                    "FB_IMG_1745454003403.jpg",
+                    "20250815_202447.jpg"
+                ],
+                opciones: [
+                    { texto: "Regresar a los años 🔙", destino: "menu_anos" }
+                ]
+            },
+            mensaje_2026: {
+                texto: "<b class='text-xl text-orange-600'>¡Feliz Cumpleaños 2026! 🎉</b><br><br>Hoy celebramos un año más de tu vida, mi amor. Siete años desde aquel primer cumpleaños y míranos ahora, con toda una historia escrita y otra gran parte por escribir. 📖✍️<br><br>Eres una mujer increíble y me siento muy afortunado de acompañarte en este viaje. Espero que este pequeño detalle en la distancia te recuerde lo mucho que significas para mí y que, sin importar las circunstancias, siempre busco verte sonreír. 🥰<br><br>¡Que tengas el mejor de los cumpleaños! Te amo muchísimo. ❤️🥂",
+                imagen: "imagespas.jpg",
+                video: "",
+                opciones: [
+                    { texto: "Nuestros momentos de hoy 📸", destino: "collage_2026" },
+                    { texto: "Regresar a los años 🔙", destino: "menu_anos" }
+                ]
+            },
+            collage_2026: {
+                texto: "¡Feliz Cumpleaños! Por muchos años más juntos 🥂❤️",
+                imagen: "",
+                video: "",
+                imagenes_collage: [
+                    "20260812_224456.jpg", 
+                    "20260704_162844.jpg"
+                ],
+                opciones: [
+                    { texto: "Volver al inicio del viaje ⏪", destino: "inicio" }
+                ]
+            }
+        };
+
+        function startGame() {
+            showNode('inicio');
+        }
+
+        function showNode(nodeId) {
+            const node = storyData[nodeId];
+            const gameCard = document.getElementById('game-card');
+            
+            // Reiniciar la animación de desvanecimiento
+            gameCard.classList.remove('fade-in');
+            void gameCard.offsetWidth; // Forzar el repintado
+            gameCard.classList.add('fade-in');
+            
+            // Actualizar el texto
+            document.getElementById('story-text').innerHTML = node.texto;
+            
+            // Actualizar la imagen o video
+            const imgElement = document.getElementById('story-image');
+            const videoElement = document.getElementById('story-video');
+            const collageElement = document.getElementById('collage-container');
+            const imgContainer = document.getElementById('image-container');
+            
+            // Pausar el video anterior si estaba reproduciéndose
+            videoElement.pause();
+            videoElement.currentTime = 0;
+            
+            // Ocultar todo por defecto
+            imgElement.classList.add('hidden');
+            videoElement.classList.add('hidden');
+            collageElement.classList.add('hidden');
+            collageElement.classList.remove('grid');
+            
+            if (node.imagenes_collage && node.imagenes_collage.length > 0) {
+                // Si hay un collage de imágenes
+                collageElement.innerHTML = ''; // Limpiar fotos anteriores
+                node.imagenes_collage.forEach(src => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.className = 'w-full h-40 object-cover rounded-xl shadow-md border-2 border-white hover:scale-105 transition-transform duration-300';
+                    collageElement.appendChild(img);
+                });
+                collageElement.classList.remove('hidden');
+                collageElement.classList.add('grid'); // Activar grid
+                imgContainer.style.display = 'block';
+            } else if (node.video && node.video !== "") {
+                // Si hay video, mostramos el video
+                videoElement.src = node.video;
+                videoElement.classList.remove('hidden');
+                imgContainer.style.display = 'block';
+            } else if (node.imagen && node.imagen !== "") {
+                // Si hay imagen, mostramos la imagen
+                imgElement.src = node.imagen;
+                imgElement.classList.remove('hidden');
+                imgContainer.style.display = 'block';
+            } else {
+                // Si no hay ni foto ni video ni collage, ocultamos todo el contenedor
+                imgContainer.style.display = 'none'; 
+            }
+            
+            // Actualizar los botones
+            const choicesContainer = document.getElementById('choices-container');
+            choicesContainer.innerHTML = ''; // Limpiar botones anteriores
+            
+            node.opciones.forEach(opcion => {
+                const button = document.createElement('button');
+                button.className = 'w-full bg-gradient-to-r from-orange-400 to-pink-500 hover:from-orange-500 hover:to-pink-600 text-white font-bold py-4 px-6 rounded-full transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-orange-300/50 flex items-center justify-center text-center serif-font text-xl tracking-wide';
+                button.innerText = opcion.texto;
+                button.onclick = () => showNode(opcion.destino);
+                choicesContainer.appendChild(button);
+            });
+        }
+
+        // Iniciar el juego en cuanto cargue la ventana
+        window.onload = function() {
+            startGame();
+        };
+    </script>
+</body>
+</html>
